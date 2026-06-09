@@ -282,7 +282,7 @@
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhGrKbxmpnf3rUb5NgykWt39Nh6Y3B3_bsXXd-RwPnVNG_66RfqF0fgn8qJ3U-OKmr/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Wmt3YFYeF06gbur713Nbo82pbxjvFQDdYz4ONhfv0FNMVOLA4lKu2PchLvXVjTGw/exec";
         
         // ข้อมูลผู้เล่น
         let userData = {
@@ -582,27 +582,33 @@
                 return;
             }
 
+            // อัปเดตวิธีการส่งข้อมูล (Fetch API)
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', 
-                cache: 'no-cache',
+                // ใช้ text/plain เพื่อป้องกันปัญหา CORS Preflight ใน Google Apps Script
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'text/plain;charset=utf-8',
                 },
                 body: JSON.stringify(userData)
             })
-            .then(() => {
-                document.getElementById('saving-status').classList.add('hidden');
-                document.getElementById('result-content').classList.remove('hidden');
-                document.getElementById('save-success-msg').classList.remove('hidden');
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                document.getElementById('saving-status').classList.add('hidden');
-                document.getElementById('result-content').classList.remove('hidden');
-                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลไปบันทึกได้ โปรดแจ้งครูผู้สอน', 'error');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        document.getElementById('saving-status').classList.add('hidden');
+                        document.getElementById('result-content').classList.remove('hidden');
+                        document.getElementById('save-success-msg').classList.remove('hidden');
+                    } else {
+                        throw new Error("API Error");
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    document.getElementById('saving-status').classList.add('hidden');
+                    document.getElementById('result-content').classList.remove('hidden');
+                    Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลไปบันทึกได้ โปรดแจ้งครูผู้สอน', 'error');
+                });
         }
+        
     </script>
 </body>
 </html>
