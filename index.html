@@ -4,75 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flowchart Master: ภารกิจพิชิตผังงาน</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'neon-blue': '#00d2ff',
+                        'neon-purple': '#bf00ff',
+                        'game-red': '#FF6B6B',
+                        'game-blue': '#4DABF7',
+                        'game-yellow': '#FCC419',
+                        'game-green': '#69DB7C',
+                    },
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
         body {
-            font-family: 'Kanit', sans-serif;
             background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-image: radial-gradient(at 10% 20%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+                              radial-gradient(at 90% 80%, rgba(191, 0, 255, 0.05) 0px, transparent 50%),
+                              url('https://www.transparenttextures.com/patterns/cubes.png');
             min-height: 100vh;
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            transition: box-shadow 0.3s ease;
         }
 
-        /* รูปทรงผังงาน (Flowchart Shapes) */
+        /* --- ปรับขนาดรูปทรงให้เล็กลงนิดหน่อย --- */
         .shape-container {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 60px;
-            margin-bottom: 5px;
+            height: 50px;
         }
         
         .shape-terminator {
-            width: 110px; height: 45px;
-            background: #FF6B6B;
+            width: 90px; height: 36px;
+            background: linear-gradient(to bottom, #ff8787, #c92a2a);
             border-radius: 30px;
-            border: 2px solid #c92a2a;
+            border: 2px solid #a61e1e;
             flex-shrink: 0;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
         }
 
         .shape-process {
-            width: 110px; height: 45px;
-            background: #4DABF7;
-            border: 2px solid #1864ab;
+            width: 90px; height: 36px;
+            background: linear-gradient(to bottom, #74c0fc, #1864ab);
+            border: 2px solid #104e87;
             flex-shrink: 0;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
         }
 
         .shape-io {
-            width: 100px; height: 45px;
-            background: #FCC419;
+            width: 85px; height: 36px;
+            background: linear-gradient(to bottom, #ffe066, #e67700);
             transform: skew(-20deg);
-            border: 2px solid #e67700;
+            border: 2px solid #b35900;
             flex-shrink: 0;
+            border-radius: 4px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
         }
 
         .shape-decision {
-            width: 50px; height: 50px;
-            background: #69DB7C;
+            width: 40px; height: 40px;
+            background: linear-gradient(to bottom, #8ce99a, #2b8a3e);
             transform: rotate(45deg);
-            border: 2px solid #2b8a3e;
-            margin: 10px 0;
+            border: 2px solid #1e612c;
+            margin: 5px 0;
             flex-shrink: 0;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
         }
 
         .shape-flowline {
-            color: #343a40;
-            font-size: 30px;
+            color: #495057;
+            font-size: 28px;
             text-align: center;
             flex-shrink: 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
         /* ลิสต์สำหรับลากวาง */
@@ -80,40 +108,61 @@
             min-height: 50px;
         }
         .sortable-item {
-            background: #ffffff;
-            border: 2px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
             cursor: grab;
             display: flex;
             align-items: center;
-            transition: all 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
         .sortable-item:active {
             cursor: grabbing;
-            transform: scale(0.98);
-        }
-        .sortable-item:hover {
-            border-color: #3b82f6;
-        }
-        .drag-handle {
-            color: #94a3b8;
-            margin-right: 15px;
-            font-size: 20px;
         }
         
-        /* ซ่อนหน้าจอ */
-        .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        .sortable-item:hover:not(.dragging) {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 6px 10px rgba(59, 130, 246, 0.1);
+            background: #f8fafc;
+        }
+        
+        .sortable-item.sortable-chosen {
+            background: #f0f7ff;
+            border-color: #3b82f6;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+        }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        .sortable-item.dragging {
+            opacity: 0.9;
+        }
+        
+        /* ปุ่มสไตล์ 3D */
+        .btn-game-primary {
+            transform: translateY(0);
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 0 #1d4ed8, 0 8px 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn-game-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 0 #1d4ed8, 0 10px 20px rgba(59, 130, 246, 0.4); }
+        .btn-game-primary:active { transform: translateY(4px); box-shadow: 0 2px 0 #1d4ed8, 0 5px 10px rgba(59, 130, 246, 0.2); }
+        
+        .btn-game-green { box-shadow: 0 6px 0 #166534, 0 8px 15px rgba(74, 222, 128, 0.3); }
+        .btn-game-green:hover { box-shadow: 0 8px 0 #166534, 0 10px 20px rgba(74, 222, 128, 0.4); }
+        .btn-game-green:active { box-shadow: 0 2px 0 #166534, 0 5px 10px rgba(74, 222, 128, 0.2); }
+        
+        .btn-game-purple { box-shadow: 0 6px 0 #7e22ce, 0 8px 15px rgba(168, 85, 247, 0.3); }
+        .btn-game-purple:hover { box-shadow: 0 8px 0 #7e22ce, 0 10px 20px rgba(168, 85, 247, 0.4); }
+        .btn-game-purple:active { box-shadow: 0 2px 0 #7e22ce, 0 5px 10px rgba(168, 85, 247, 0.2); }
+
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeInSlide 0.6s ease-out; }
+
+        @keyframes fadeInSlide {
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Spinner */
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #3b82f6;
@@ -125,110 +174,116 @@
             vertical-align: middle;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.4); }
     </style>
 </head>
-<body class="text-gray-800 pb-10">
+<body class="text-gray-800 pb-16">
 
-    <div class="container mx-auto px-4 max-w-3xl mt-10">
+    <div class="container mx-auto px-4 max-w-3xl mt-12 md:mt-16 relative">
+        <div class="absolute -top-10 -left-10 w-40 h-40 bg-neon-blue rounded-full blur-[100px] opacity-20 hidden md:block"></div>
+        <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-neon-purple rounded-full blur-[100px] opacity-20 hidden md:block"></div>
         
-        <div id="screen-register" class="screen active glass-panel p-8">
+        <div id="screen-register" class="screen active glass-panel p-8 md:p-12 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-neon-blue to-neon-purple opacity-70"></div>
+            
             <div class="text-center mb-8">
-                <i class="fas fa-gamepad text-5xl text-blue-500 mb-4"></i>
-                <h1 class="text-3xl font-bold text-gray-800">Flowchart Master</h1>
-                <p class="text-gray-500 mt-2">ภารกิจพิชิตผังงาน (สำหรับ ม.1)</p>
+                <i class="fas fa-network-wired text-5xl text-transparent bg-clip-text bg-gradient-to-r from-neon-blue to-neon-purple mb-4 animate-pulse"></i>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter text-gray-900">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700">Flowchart Master</span>
+                </h1>
+                <p class="text-gray-600 mt-2 text-lg font-medium">ภารกิจพิชิตผังงาน</p>
             </div>
 
-            <form id="register-form" class="space-y-4">
+            <form id="register-form" class="space-y-5 relative z-10">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">ชื่อ <span class="text-red-500">*</span></label>
-                        <input type="text" id="fname" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" placeholder="ไม่ต้องใส่ ด.ช./ด.ญ.">
+                        <label class="block text-sm font-semibold mb-1 text-gray-700">ชื่อ <span class="text-red-500">*</span></label>
+                        <input type="text" id="fname" required class="w-full px-4 py-3 border-2 border-gray-100 bg-white/50 rounded-xl focus:border-neon-blue focus:ring-4 focus:ring-blue-100 transition-all outline-none" placeholder="ไม่ต้องใส่ ด.ช./ด.ญ.">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">นามสกุล <span class="text-red-500">*</span></label>
-                        <input type="text" id="lname" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" placeholder="นามสกุล">
+                        <label class="block text-sm font-semibold mb-1 text-gray-700">นามสกุล <span class="text-red-500">*</span></label>
+                        <input type="text" id="lname" required class="w-full px-4 py-3 border-2 border-gray-100 bg-white/50 rounded-xl focus:border-neon-blue focus:ring-4 focus:ring-blue-100 transition-all outline-none" placeholder="นามสกุล">
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-1">ระดับชั้น <span class="text-red-500">*</span></label>
-                        <select id="class-name" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none">
+                        <label class="block text-sm font-semibold mb-1 text-gray-700">ระดับชั้น <span class="text-red-500">*</span></label>
+                        <select id="class-name" required class="w-full px-4 py-3 border-2 border-gray-100 bg-white/50 rounded-xl focus:border-neon-blue focus:ring-4 focus:ring-blue-100 transition-all outline-none cursor-pointer">
                             <option value="">เลือกห้องเรียน</option>
-                            <option value="ม.1/1">ม.1/1</option>
-                            <option value="ม.1/2">ม.1/2</option>
-                            <option value="ม.1/3">ม.1/3</option>
-                            <option value="ม.1/4">ม.1/4</option>
-                            <option value="ม.1/5">ม.1/5</option>
-                            <option value="ม.1/6">ม.1/6</option>
-                            <option value="ม.1/7">ม.1/7</option>
-                            <option value="ม.1/8">ม.1/8</option>
-                            <option value="ม.1/9">ม.1/9</option>
-                            <option value="ม.1/10">ม.1/10</option>
-                            <option value="ม.1/11">ม.1/11</option>
-                            <option value="ม.1/12">ม.1/12</option>
-                            <option value="ม.1/13">ม.1/13</option>
-                            <option value="ม.1/14">ม.1/14</option>
-                            <option value="ม.1/15">ม.1/15</option>
-                            <option value="ม.1/16">ม.1/16</option>
-                            <option value="ม.1/17">ม.1/17</option>
-                            <option value="ม.1/18">ม.1/18</option>
-                            <option value="ม.1/19">ม.1/19</option>
-                            <option value="ม.1/20">ม.1/20</option>
                         </select>
+
+                        <script>
+                            const classSelect = document.getElementById('class-name');
+                            for (let i = 1; i <= 20; i++) {
+                                classSelect.innerHTML += `<option value="ม.1/${i}">ม.1/${i}</option>`;
+                            }
+                        </script>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-1">เลขที่ <span class="text-red-500">*</span></label>
-                        <input type="number" id="student-id" required min="1" max="50" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" placeholder="เช่น 1">
+                        <label class="block text-sm font-semibold mb-1 text-gray-700">เลขที่ <span class="text-red-500">*</span></label>
+                        <input type="number" id="student-id" required min="1" max="50" class="w-full px-4 py-3 border-2 border-gray-100 bg-white/50 rounded-xl focus:border-neon-blue focus:ring-4 focus:ring-blue-100 transition-all outline-none" placeholder="เช่น 1">
                     </div>
                 </div>
-                <button type="submit" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg text-lg">
-                    เริ่มทำภารกิจ <i class="fas fa-arrow-right ml-2"></i>
-                </button>
+                <div class="pt-4">
+                    <button type="submit" class="w-full btn-game-primary bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-xl text-lg uppercase tracking-wider flex items-center justify-center">
+                        เริ่มทำภารกิจ <i class="fas fa-play-circle ml-3"></i>
+                    </button>
+                </div>
             </form>
         </div>
 
-        <div id="screen-part1" class="screen glass-panel p-6 md:p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-blue-600">ส่วนที่ 1: จับคู่สัญลักษณ์</h2>
-                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">ข้อ 1 - 5</span>
+        <div id="screen-part1" class="screen glass-panel p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-neon-blue opacity-60"></div>
+            <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">ส่วนที่ 1: <span class="text-blue-600">จับคู่สัญลักษณ์</span></h2>
+                <span class="bg-blue-100 text-blue-800 text-xs md:text-sm font-bold px-3 py-1 rounded-full border border-blue-200">ข้อ 1 - 5</span>
             </div>
-            <p class="mb-6 font-medium text-gray-600"><i class="fas fa-info-circle text-blue-500 mr-2"></i>คำชี้แจง: ให้ลาก <span class="font-bold">กล่องข้อความความหมาย (ด้านขวา)</span> สลับขึ้นลง เพื่อให้ตรงกับรูปทรงสัญลักษณ์ทางซ้ายมือ</p>
+            
+            <p class="mb-6 font-medium text-gray-700 text-sm md:text-base leading-relaxed bg-white/60 p-4 rounded-xl border border-gray-100 shadow-sm">
+                <i class="fas fa-info-circle text-blue-500 mr-2 text-lg"></i>คำชี้แจง: ให้ลาก <span class="font-semibold text-blue-700">กล่องข้อความความหมาย (ด้านขวา)</span> สลับขึ้นลง เพื่อให้ตรงกับรูปทรงสัญลักษณ์ทางซ้ายมือ (สามารถคลิกลากที่กล่องได้เลย)
+            </p>
 
-            <div class="grid grid-cols-12 gap-2 md:gap-4 items-start">
-                <div class="col-span-4 md:col-span-3 space-y-4 pt-2">
-                    <div class="flex flex-col items-center h-20 justify-center"><div class="shape-terminator"></div><span class="text-xs mt-1 font-semibold text-gray-500">Terminator</span></div>
-                    <div class="flex flex-col items-center h-20 justify-center"><div class="shape-process"></div><span class="text-xs mt-1 font-semibold text-gray-500">Process</span></div>
-                    <div class="flex flex-col items-center h-20 justify-center"><div class="shape-io"></div><span class="text-xs mt-1 font-semibold text-gray-500">Input/Output</span></div>
-                    <div class="flex flex-col items-center h-20 justify-center"><div class="shape-decision"></div><span class="text-xs mt-1 font-semibold text-gray-500">Decision</span></div>
-                    <div class="flex flex-col items-center h-20 justify-center"><div class="shape-flowline"><i class="fas fa-long-arrow-alt-down"></i></div><span class="text-xs mt-1 font-semibold text-gray-500">Flowline</span></div>
+            <div class="grid grid-cols-12 gap-3 md:gap-4 items-start">
+                <div class="col-span-4 md:col-span-3 pt-1">
+                    <div class="flex flex-col items-center h-[76px] mb-3 justify-center"><div class="shape-terminator"></div><span class="text-[10px] md:text-xs mt-1 font-bold text-game-red">Terminator</span></div>
+                    <div class="flex flex-col items-center h-[76px] mb-3 justify-center"><div class="shape-process"></div><span class="text-[10px] md:text-xs mt-1 font-bold text-game-blue opacity-90">Process</span></div>
+                    <div class="flex flex-col items-center h-[76px] mb-3 justify-center"><div class="shape-io"></div><span class="text-[10px] md:text-xs mt-1 font-bold text-game-yellow opacity-90">Input/Output</span></div>
+                    <div class="flex flex-col items-center h-[76px] mb-3 justify-center"><div class="shape-decision"></div><span class="text-[10px] md:text-xs mt-1 font-bold text-game-green opacity-90">Decision</span></div>
+                    <div class="flex flex-col items-center h-[76px] mb-3 justify-center"><div class="shape-flowline"><i class="fas fa-long-arrow-alt-down"></i></div><span class="text-[10px] md:text-xs mt-1 font-bold text-gray-600">Flowline</span></div>
                 </div>
 
-                <div class="col-span-8 md:col-span-9">
-                    <div id="matching-list" class="sortable-list space-y-2">
+                <div class="col-span-8 md:col-span-9 pt-1">
+                    <div id="matching-list" class="sortable-list">
                         </div>
                 </div>
             </div>
 
-            <button id="btn-part1-next" class="w-full mt-8 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg text-lg">
-                ตรวจคำตอบและไปส่วนที่ 2 <i class="fas fa-check-circle ml-2"></i>
+            <button id="btn-part1-next" class="w-full mt-8 btn-game-green bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-xl text-lg flex items-center justify-center">
+                ตรวจคำตอบและไปส่วนที่ 2 <i class="fas fa-check-double ml-3"></i>
             </button>
         </div>
 
-        <div id="screen-part2" class="screen glass-panel p-6 md:p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-purple-600">ส่วนที่ 2: เรียงลำดับผังงาน</h2>
-                <span id="scenario-counter" class="bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">สถานการณ์ 1/5</span>
+        <div id="screen-part2" class="screen glass-panel p-6 md:p-10 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-neon-purple opacity-60"></div>
+            <div class="flex justify-between items-center mb-6 border-b-2 border-gray-100 pb-4">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">ส่วนที่ 2: <span class="text-purple-600">เรียงลำดับผังงาน</span></h2>
+                <span id="scenario-counter" class="bg-purple-100 text-purple-800 text-sm font-bold px-4 py-1 rounded-full border border-purple-200">สถานการณ์ 1/5</span>
             </div>
             
-            <div class="bg-purple-50 border-l-4 border-purple-500 p-4 mb-6 rounded-r-lg">
-                <h3 id="scenario-title" class="text-lg font-bold text-gray-800 mb-2">สถานการณ์: -</h3>
-                <p class="font-medium text-sm text-gray-600">คำชี้แจง: เรียงลำดับขั้นตอนผังงาน (โครงสร้างลำดับ) โดยลากกล่องข้อความจากบนลงล่างให้ถูกต้องตามลำดับความเป็นจริง</p>
+            <div class="bg-white border-l-4 border-purple-500 p-5 mb-8 rounded-xl shadow-sm border border-gray-100">
+                <h3 id="scenario-title" class="text-lg md:text-xl font-bold text-purple-700 mb-2 flex items-center"><i class="fas fa-map-marked-alt mr-3"></i> <span>สถานการณ์: -</span></h3>
+                <p class="font-medium text-sm md:text-base text-gray-700 leading-relaxed bg-gray-50 p-3 rounded-lg shadow-inner border border-gray-100"><i class="fas fa-info-circle text-purple-500 mr-2 opacity-80"></i>คำชี้แจง: ลากกล่องข้อความจากบนลงล่างให้ถูกต้องตามลำดับความเป็นจริง (คลิกตรงไหนของกล่องเพื่อลากก็ได้)</p>
             </div>
 
-            <div class="relative pl-10 border-l-4 border-gray-300 ml-4 py-2" id="sequence-container">
-                <div class="absolute -left-[14px] top-0 bottom-0 flex flex-col justify-between text-gray-300 py-4">
-                    <i class="fas fa-chevron-down"></i>
-                    <i class="fas fa-chevron-down"></i>
+            <div class="relative pl-10 md:pl-12 border-l-4 border-gray-200 ml-4 md:ml-6 py-2" id="sequence-container">
+                <div class="absolute -left-[14px] md:-left-[16px] top-0 bottom-0 flex flex-col justify-between text-gray-300 py-6 font-black text-lg">
+                    <i class="fas fa-chevron-down animate-bounce" style="animation-delay: 0s;"></i>
+                    <i class="fas fa-chevron-down opacity-60"></i>
+                    <i class="fas fa-chevron-down opacity-60 animate-bounce" style="animation-delay: 0.5s;"></i>
                     <i class="fas fa-chevron-down"></i>
                 </div>
 
@@ -236,70 +291,69 @@
                     </div>
             </div>
 
-            <button id="btn-part2-next" class="w-full mt-8 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg text-lg">
-                ส่งคำตอบสถานการณ์นี้ <i class="fas fa-arrow-right ml-2"></i>
+            <button id="btn-part2-next" class="w-full mt-10 btn-game-purple bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-xl text-lg flex items-center justify-center tracking-wide">
+                ส่งคำตอบสถานการณ์นี้ <i class="fas fa-paper-plane ml-3 opacity-80"></i>
             </button>
         </div>
 
-        <div id="screen-result" class="screen glass-panel p-8 text-center">
-            <div id="saving-status" class="mb-6 hidden">
-                <div class="loader mr-2"></div> <span class="text-blue-600 font-bold">กำลังบันทึกคะแนนลงระบบ...</span>
+        <div id="screen-result" class="screen glass-panel p-8 md:p-12 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-neon-blue via-green-400 to-neon-purple opacity-70"></div>
+            
+            <div id="saving-status" class="mb-8 hidden bg-blue-50 p-6 rounded-2xl border border-blue-100 inline-block">
+                <div class="loader mr-3"></div> <span class="text-blue-700 font-bold text-lg md:text-xl">กำลังบันทึกคะแนนลงระบบ...</span>
             </div>
 
             <div id="result-content" class="hidden">
-                <i class="fas fa-trophy text-6xl text-yellow-400 mb-4 animate-bounce"></i>
-                <h1 class="text-4xl font-bold text-gray-800 mb-2">ภารกิจสำเร็จ!</h1>
-                <p id="result-message" class="text-xl font-semibold mb-8 text-blue-600"></p>
+                <i class="fas fa-trophy text-7xl md:text-8xl text-yellow-400 mb-6 animate-pulse" style="filter: drop-shadow(0 0 10px rgba(250, 204, 21, 0.5));"></i>
+                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tighter mb-2">ภารกิจสำเร็จ!</h1>
+                <p id="result-message" class="text-xl md:text-2xl font-semibold mb-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 p-2"></p>
 
-                <div class="bg-gray-50 rounded-xl p-6 border-2 border-dashed border-gray-300 inline-block text-left w-full max-w-md mx-auto mb-8 shadow-sm">
-                    <div class="border-b pb-4 mb-4">
-                        <p class="text-sm text-gray-500 uppercase tracking-wide">บัตรประจำตัว</p>
-                        <h2 id="res-name" class="text-2xl font-bold text-gray-800">ชื่อ - นามสกุล</h2>
-                        <p class="text-gray-600 font-medium">ชั้น: <span id="res-class" class="text-blue-600">ม.1/X</span> | เลขที่: <span id="res-id" class="text-blue-600">XX</span></p>
+                <div class="bg-white rounded-3xl p-6 md:p-8 border-4 border-dashed border-blue-200 inline-block text-left w-full max-w-lg mx-auto mb-8 shadow-lg relative">
+                    <div class="absolute top-5 right-5 text-4xl opacity-10 text-neon-blue"><i class="fas fa-robot"></i></div>
+                    
+                    <div class="border-b-2 border-gray-100 pb-4 mb-4 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">บัตรประจำตัว Master</p>
+                            <h2 id="res-name" class="text-xl md:text-2xl font-bold text-gray-950">ชื่อ - นามสกุล</h2>
+                            <p class="text-gray-700 font-medium text-sm md:text-base mt-1">ชั้น: <span id="res-class" class="text-blue-600 font-semibold">ม.1/X</span> | เลขที่: <span id="res-id" class="text-blue-600 font-semibold">XX</span></p>
+                        </div>
                     </div>
                     <div>
-                        <p class="text-sm text-gray-500 uppercase tracking-wide">ผลคะแนนรวม</p>
-                        <div class="flex items-end mt-1">
-                            <span id="res-score" class="text-5xl font-extrabold text-green-500">0</span>
-                            <span class="text-xl text-gray-500 mb-1 ml-2">/ 10 คะแนน</span>
+                        <p class="text-xs text-gray-500 uppercase tracking-widest font-bold mb-2">ผลคะแนนรวมที่ได้</p>
+                        <div class="flex items-end mt-1 bg-green-50 p-4 rounded-xl border border-green-100 inline-flex shadow-inner">
+                            <span id="res-score" class="text-5xl md:text-6xl font-black text-green-500 tracking-tight" style="line-height: 1;">0</span>
+                            <span class="text-xl md:text-2xl text-green-700 mb-1 ml-3 font-semibold">/ 10 คะแนน</span>
                         </div>
-                        <p class="text-sm mt-2 text-gray-500">
+                        <p class="text-xs md:text-sm mt-3 text-gray-600 font-medium p-2 bg-gray-50 rounded-md inline-block">
                             (จับคู่ 5 คะแนน + เรียงลำดับ 5 คะแนน)
                         </p>
                     </div>
                 </div>
 
-                <div id="save-success-msg" class="text-green-600 font-bold hidden mb-6">
-                    <i class="fas fa-check-circle mr-1"></i> ระบบบันทึกคะแนนของคุณเรียบร้อยแล้ว!
+                <div id="save-success-msg" class="text-green-700 font-bold hidden mb-8 text-sm md:text-base bg-green-100 p-3 md:p-4 rounded-xl border border-green-200 shadow-inner flex items-center justify-center max-w-sm mx-auto">
+                    <i class="fas fa-cloud-upload-alt mr-2 text-xl opacity-80"></i> ระบบบันทึกคะแนนของคุณเรียบร้อยแล้ว!
                 </div>
 
-                <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg transition duration-200">
-                    <i class="fas fa-redo mr-2"></i> เล่นใหม่อีกครั้ง
-                </button>
+                <div class="flex items-center justify-center mt-8 border-t pt-8">
+                    <button onclick="location.reload()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded-xl transition duration-200 flex items-center text-base md:text-lg">
+                        <i class="fas fa-redo mr-3 opacity-60"></i> เล่นใหม่อีกครั้ง
+                    </button>
+                </div>
             </div>
         </div>
 
     </div>
 
     <script>
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Wmt3YFYeF06gbur713Nbo82pbxjvFQDdYz4ONhfv0FNMVOLA4lKu2PchLvXVjTGw/exec";
+        // *** ใส่ URL ของ Google Apps Script ของคุณตรงนี้ ***
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7Wmt3YFYeF06gbur713Nbo82pbxjvFQDdYz4ONhfv0FNMVOLA4lKu2PchLvXVjTGw/exec"; 
         
-        // ข้อมูลผู้เล่น
-        let userData = {
-            firstName: "",
-            lastName: "",
-            className: "",
-            studentId: "",
-            score: 0
-        };
-
-        // ตัวแปรควบคุม
+        let userData = { firstName: "", lastName: "", className: "", studentId: "", score: 0 };
         let currentScenarioIndex = 0;
         let part1Score = 0;
         let part2Score = 0;
         let sortablePart1, sortablePart2;
 
-        // --- ข้อมูลเกมส่วนที่ 1: จับคู่ความหมาย ---
         const part1Data = [
             { id: "term", text: "จุดเริ่มต้นและจุดสิ้นสุดของการทำงาน", match: 0 },
             { id: "proc", text: "การประมวลผล การคำนวณ หรือการปฏิบัติงาน", match: 1 },
@@ -308,7 +362,6 @@
             { id: "flow", text: "ทิศทางลำดับขั้นตอนการทำงาน", match: 4 }
         ];
 
-        // --- ข้อมูลเกมส่วนที่ 2: เรียงสถานการณ์ ---
         const part2Scenarios = [
             {
                 title: "การเติมเงินเกมมือถือ (ROV/Free Fire)",
@@ -331,12 +384,13 @@
                 ]
             },
             {
-                title: "การต้มบะหมี่กึ่งสำเร็จรูป",
+                title: "การทำบะหมี่กึ่งสำเร็จรูป",
+                // ข้อนี้ลำดับชัดเจนแล้ว ไม่ต้องใช้คำตอบหลายแบบ (เอา validOrders ออกได้เลย)
                 steps: [
                     { id: 1, text: "(เริ่มต้น) เริ่มต้นทำงาน", shape: "terminator" },
-                    { id: 2, text: "(ประมวลผล) ต้มน้ำร้อนให้เดือด", shape: "process" },
-                    { id: 3, text: "(ประมวลผล) ใส่เส้นบะหมี่และเครื่องปรุงลงในชาม", shape: "process" },
-                    { id: 4, text: "(ประมวลผล) เทน้ำร้อนและรอ 3 นาที", shape: "process" },
+                    { id: 2, text: "(ประมวลผล) ฉีกซองบะหมี่และเครื่องปรุงใส่ชาม", shape: "process" },
+                    { id: 3, text: "(ประมวลผล) เทน้ำร้อนลงในชามแล้วปิดฝา", shape: "process" },
+                    { id: 4, text: "(ประมวลผล) จับเวลารอ 3 นาที", shape: "process" },
                     { id: 5, text: "(สิ้นสุด) สิ้นสุดการทำงาน", shape: "terminator" }
                 ]
             },
@@ -361,6 +415,35 @@
                 ]
             }
         ];
+
+        const GameAlert = Swal.mixin({
+            customClass: {
+                popup: 'rounded-3xl shadow-2xl glass-panel border-4 border-blue-100 p-6 md:p-8',
+                title: 'text-xl md:text-2xl font-bold Kanit',
+                htmlContainer: 'Kanit text-gray-700 text-sm md:text-base',
+                confirmButton: 'Kanit font-semibold px-6 py-2 md:px-8 md:py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-lg focus:ring-4 focus:ring-blue-100 outline-none'
+            },
+            buttonsStyling: false,
+            backdrop: `rgba(0,10,30,0.1)`
+        });
+
+        const SuccessAlert = GameAlert.mixin({
+            customClass: {
+                popup: 'rounded-3xl glass-panel border-4 border-green-200 p-6',
+                title: 'text-2xl md:text-3xl font-extrabold Kanit text-green-600',
+                htmlContainer: 'Kanit text-green-800 font-medium',
+                confirmButton: 'Kanit font-bold px-8 py-3 rounded-xl bg-green-500 hover:bg-green-600 text-white shadow-lg btn-game-green'
+            }
+        });
+
+        const ErrorAlert = GameAlert.mixin({
+            customClass: {
+                popup: 'rounded-3xl glass-panel border-4 border-game-red p-6',
+                title: 'text-xl md:text-2xl font-bold Kanit text-red-600',
+                htmlContainer: 'Kanit text-gray-800',
+                confirmButton: 'Kanit font-bold px-8 py-3 rounded-xl bg-game-red hover:bg-red-600 text-white shadow-lg'
+            }
+        });
 
         function shuffleArray(array) {
             let curId = array.length;
@@ -399,42 +482,44 @@
             
             shuffled.forEach((item) => {
                 let li = document.createElement('div');
-                li.className = 'sortable-item h-20 mb-4 flex items-center bg-white border-2 border-gray-300 rounded-lg p-2 font-medium text-sm md:text-base';
+                // ตั้งค่า h-[76px] และ mb-3 ให้ตรงกับฝั่งซ้ายเป๊ะๆ ลบ handle ออกเพื่อให้ลากได้ทั้งกล่อง
+                li.className = 'sortable-item h-[76px] mb-3 flex items-center bg-white border border-gray-200 shadow-sm px-3 md:px-5 cursor-grab hover:bg-blue-50';
                 li.dataset.match = item.match;
-                li.innerHTML = `<i class="fas fa-grip-vertical drag-handle cursor-grab"></i> <span class="flex-1">${item.text}</span>`;
+                li.innerHTML = `<i class="fas fa-grip-vertical text-blue-300 mr-3 text-lg"></i> <span class="flex-1 text-gray-800 font-medium text-sm md:text-base leading-tight">${item.text}</span>`;
                 listEl.appendChild(li);
             });
 
             if(sortablePart1) sortablePart1.destroy();
             sortablePart1 = new Sortable(listEl, {
-                animation: 150,
-                ghostClass: 'bg-blue-50'
+                animation: 250,
+                ghostClass: 'dragging',
+                chosenClass: 'sortable-chosen',
+                // เอา handle ออก เพื่อให้ลากได้ทั้งกล่องเลย!
             });
         }
 
-        // --- เพิ่มปุ่มตรวจคำตอบส่วนที่ 1 กลับคืนมา ---
         document.getElementById('btn-part1-next').addEventListener('click', () => {
             const items = document.querySelectorAll('#matching-list .sortable-item');
             part1Score = 0;
             let allCorrect = true;
-            let feedbackHTML = '<div class="text-left text-sm mt-4 space-y-2">';
+            let feedbackHTML = '<div class="text-left text-sm mt-4 space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-inner">';
 
             items.forEach((item, index) => {
                 let correctAnswerText = part1Data.find(d => d.match === index).text;
                 if (parseInt(item.dataset.match) === index) {
                     part1Score++;
-                    feedbackHTML += `<p class="text-green-600"><i class="fas fa-check-circle"></i> <b>สัญลักษณ์ที่ ${index+1}:</b> ถูกต้อง</p>`;
+                    feedbackHTML += `<p class="text-green-600 flex items-center gap-2"><i class="fas fa-check-circle opacity-90"></i> <span><b>สัญลักษณ์ที่ ${index+1}:</b> ถูกต้อง</span></p>`;
                 } else {
                     allCorrect = false;
-                    feedbackHTML += `<p class="text-red-500"><i class="fas fa-times-circle"></i> <b>สัญลักษณ์ที่ ${index+1}:</b> ผิด<br><span class="text-gray-600 text-xs ml-4">👉 ที่ถูกคือ: ${correctAnswerText}</span></p>`;
+                    feedbackHTML += `<p class="text-red-500 flex items-start gap-2"><i class="fas fa-times-circle mt-0.5 opacity-90"></i> <span><b>สัญลักษณ์ที่ ${index+1}:</b> ผิด<br><span class="text-gray-600 text-xs">👉 เฉลย: ${correctAnswerText}</span></span></p>`;
                 }
             });
             feedbackHTML += '</div>';
 
-            Swal.fire({
-                title: allCorrect ? 'เยี่ยมมาก!' : 'มาดูเฉลยกัน!',
-                html: `ส่วนที่ 1 คุณทำได้ ${part1Score} / 5 คะแนน<hr class="my-2">${feedbackHTML}`,
-                icon: allCorrect ? 'success' : 'info',
+            SuccessAlert.fire({
+                title: allCorrect ? 'ยอดเยี่ยมมาก!' : 'สรุปผลส่วนที่ 1',
+                html: `คุณได้คะแนนจับคู่ <span class="text-green-600 text-2xl font-black px-1">${part1Score} / 5</span><hr class="my-3 border-green-100">${feedbackHTML}`,
+                icon: allCorrect ? 'success' : undefined,
                 confirmButtonText: 'ลุยส่วนที่ 2 กันเลย!'
             }).then(() => {
                 initPart2Scenario(0);
@@ -444,20 +529,28 @@
 
         function getShapeNameTH(shapeType) {
             switch(shapeType) {
-                case 'terminator': return 'รูปแคปซูล (Start/End)';
-                case 'process': return 'รูปสี่เหลี่ยมผืนผ้า (Process)';
-                case 'io': return 'รูปสี่เหลี่ยมด้านขนาน (Input/Output)';
+                case 'terminator': return 'รูปแคปซูล (เริ่มต้น/สิ้นสุด)';
+                case 'process': return 'รูปสี่เหลี่ยม (ประมวลผล)';
+                case 'io': return 'รูปสี่เหลี่ยมเอียง (นำเข้า/แสดงผล)';
                 default: return '';
             }
         }
 
-        // --- เพิ่มฟังก์ชันจัดการรูปทรงส่วนที่ 2 กลับคืนมา ---
+        function getShapeTextStyleClass(shapeType) {
+            switch(shapeType) {
+                case 'terminator': return 'text-game-red';
+                case 'process': return 'text-game-blue';
+                case 'io': return 'text-game-yellow';
+                default: return 'text-gray-800';
+            }
+        }
+
         function getShapeStyle(shapeType) {
             switch(shapeType) {
-                case 'terminator': return 'bg-red-100 border-red-500 text-red-800 rounded-full border-2';
-                case 'process': return 'bg-blue-100 border-blue-500 text-blue-800 border-2 rounded';
-                case 'io': return 'bg-yellow-100 border-yellow-500 text-yellow-800 border-2 rounded transform -skew-x-12';
-                default: return 'bg-gray-100';
+                case 'terminator': return 'bg-red-50 border-game-red text-game-red rounded-full border-2';
+                case 'process': return 'bg-blue-50 border-game-blue text-game-blue border-2 rounded-xl';
+                case 'io': return 'bg-yellow-50 border-game-yellow text-game-yellow border-2 rounded-lg transform -skew-x-12';
+                default: return 'bg-gray-50';
             }
         }
 
@@ -469,8 +562,8 @@
             currentScenarioIndex = index;
             const scenario = part2Scenarios[index];
             
-            document.getElementById('scenario-counter').innerText = `ข้อ ${index + 1} จาก 5`;
-            document.getElementById('scenario-title').innerText = scenario.title;
+            document.getElementById('scenario-counter').innerText = `สถานการณ์ ${index + 1} / 5`;
+            document.getElementById('scenario-title').innerText = `ภารกิจ: ${scenario.title}`;
             
             const listEl = document.getElementById('sequence-list');
             listEl.innerHTML = '';
@@ -479,16 +572,21 @@
 
             shuffledSteps.forEach(step => {
                 let div = document.createElement('div');
-                div.className = 'sortable-item relative z-10 flex items-center mb-4 cursor-grab bg-white shadow-sm';
+                div.className = 'sortable-item relative z-10 flex items-center min-h-[70px] mb-4 p-2 bg-transparent shadow-none border-none cursor-grab';
                 div.dataset.id = step.id;
                 
                 let shapeStyle = getShapeStyle(step.shape);
                 let innerStyle = getShapeInnerStyle(step.shape);
+                let displayText = step.text.replace(/^\(.*?\)\s*/, '');
 
+                // เอา handle ออกเหมือนกัน เพื่อให้ลากได้ทั้งก้อน
                 div.innerHTML = `
-                    <i class="fas fa-grip-lines drag-handle"></i>
-                    <div class="flex-1 px-4 py-2 text-center text-sm md:text-base font-semibold shadow-sm ${shapeStyle}">
-                        <div class="block w-full ${innerStyle}">${step.text}</div>
+                    <i class="fas fa-grip-lines text-purple-300 mr-2 md:mr-4 text-xl"></i>
+                    <div class="flex-1 h-full px-3 py-2 flex items-center justify-center text-center font-bold shadow-sm hover:shadow-md transition-shadow ${shapeStyle}">
+                        <div class="w-full ${innerStyle}">
+                            <p class="text-[10px] uppercase font-extrabold opacity-60 tracking-wider mb-0.5">${step.shape}</p>
+                            <p class="text-gray-900 text-sm md:text-base leading-tight">${displayText}</p>
+                        </div>
                     </div>
                 `;
                 listEl.appendChild(div);
@@ -496,8 +594,10 @@
 
             if(sortablePart2) sortablePart2.destroy();
             sortablePart2 = new Sortable(listEl, {
-                animation: 150,
-                ghostClass: 'opacity-50'
+                animation: 250,
+                ghostClass: 'dragging',
+                chosenClass: 'sortable-chosen',
+                // เอา handle ออกเหมือนกัน!
             });
         }
 
@@ -506,7 +606,7 @@
             let isCorrect = true;
             const currentScenario = part2Scenarios[currentScenarioIndex];
 
-            let expectedOrderHTML = '<div class="text-left text-sm mt-4 space-y-2 border-t pt-4"><p class="font-bold text-gray-700">✅ เฉลยลำดับและสัญลักษณ์ที่ถูกต้อง:</p>';
+            let expectedOrderHTML = '<div class="text-left text-xs md:text-sm mt-4 space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-100"><p class="font-bold text-gray-700 mb-2"><i class="fas fa-magic text-purple-500 mr-1"></i>เฉลยที่ถูกต้อง:</p>';
 
             items.forEach((item, index) => {
                 if (parseInt(item.dataset.id) !== (index + 1)) {
@@ -514,29 +614,32 @@
                 }
             });
 
-            currentScenario.steps.forEach(s => {
-                let stepText = s.text.replace(/\(.*\)\s/, '');
+            currentScenario.steps.forEach((s, idx) => {
+                let stepText = s.text.replace(/^\(.*?\)\s*/, '');
                 expectedOrderHTML += `
-                    <div class="bg-gray-50 p-2 rounded border mb-1">
-                        <p class="text-blue-600 font-semibold text-xs">ลำดับที่ ${s.id} : ใช้${getShapeNameTH(s.shape)}</p>
-                        <p class="text-gray-700 text-sm mt-1">${stepText}</p>
+                    <div class="bg-white p-2 rounded-lg border border-gray-100 flex gap-2 items-center">
+                        <span class="font-black text-lg text-purple-300">${s.id}</span>
+                        <div>
+                            <p class="text-gray-800 font-medium text-xs md:text-sm leading-tight">${stepText}</p>
+                            <p class="${getShapeTextStyleClass(s.shape)} font-bold text-[10px]">ใช้${getShapeNameTH(s.shape)}</p>
+                        </div>
                     </div>`;
             });
             expectedOrderHTML += '</div>';
 
             if (isCorrect) {
                 part2Score++;
-                Swal.fire({
+                SuccessAlert.fire({
                     title: 'ถูกต้อง!',
-                    text: 'เก่งมาก เรียงลำดับและใช้สัญลักษณ์ได้สมบูรณ์แบบ',
+                    text: 'เยี่ยมมาก เรียงลำดับและใช้สัญลักษณ์ได้สมบูรณ์แบบ',
                     icon: 'success',
                     timer: 1500,
                     showConfirmButton: false
                 }).then(() => nextPart2());
             } else {
-                Swal.fire({
-                    title: 'ยังไม่ถูกต้องนะ!',
-                    html: `มีบางขั้นตอนสลับกัน หรือใช้สัญลักษณ์ผิดลำดับ${expectedOrderHTML}`,
+                ErrorAlert.fire({
+                    title: 'ยังไม่ถูกนะ!',
+                    html: `เรียงลำดับผิด หรือใช้สัญลักษณ์ผิด<hr class="my-3 border-gray-100">${expectedOrderHTML}`,
                     icon: 'error',
                     confirmButtonText: 'เข้าใจแล้ว ไปข้อถัดไป'
                 }).then(() => nextPart2());
@@ -549,7 +652,7 @@
             } else {
                 finishGame();
             }          
-        } // แก้ไข Error ตรงนี้แล้ว เปลี่ยนจาก }); เป็น }
+        }
 
         function finishGame() {
             userData.score = part1Score + part2Score;
@@ -563,6 +666,7 @@
             if(userData.score >= 8) msg = "ยอดเยี่ยมมาก! คุณคือมาสเตอร์ด้านผังงาน 🌟";
             else if(userData.score >= 5) msg = "ทำได้ดีเลย! ฝึกอีกนิดจะเก่งขึ้นแน่นอน 👍";
             else msg = "พยายามได้ดี! ลองกลับไปทบทวนสัญลักษณ์อีกครั้งนะ ✌️";
+            
             document.getElementById('result-message').innerText = msg;
 
             showScreen('screen-result');
@@ -577,36 +681,32 @@
                 setTimeout(() => {
                     document.getElementById('saving-status').classList.add('hidden');
                     document.getElementById('result-content').classList.remove('hidden');
-                    Swal.fire('คำเตือน', 'ยังไม่ได้เชื่อมต่อ Google Sheets แต่สามารถดูคะแนนได้', 'info');
+                    SuccessAlert.fire('จบเกม!', 'จบภารกิจเรียบร้อย (ยังไม่ได้เชื่อมต่อระบบบันทึกคะแนน)', 'info');
                 }, 1500);
                 return;
             }
 
-            // อัปเดตวิธีการส่งข้อมูล (Fetch API)
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                // ใช้ text/plain เพื่อป้องกันปัญหา CORS Preflight ใน Google Apps Script
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8',
-                },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(userData)
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        document.getElementById('saving-status').classList.add('hidden');
-                        document.getElementById('result-content').classList.remove('hidden');
-                        document.getElementById('save-success-msg').classList.remove('hidden');
-                    } else {
-                        throw new Error("API Error");
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
                     document.getElementById('saving-status').classList.add('hidden');
                     document.getElementById('result-content').classList.remove('hidden');
-                    Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลไปบันทึกได้ โปรดแจ้งครูผู้สอน', 'error');
-                });
+                    document.getElementById('save-success-msg').classList.remove('hidden');
+                } else {
+                    throw new Error("API Error");
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                document.getElementById('saving-status').classList.add('hidden');
+                document.getElementById('result-content').classList.remove('hidden');
+                ErrorAlert.fire('เกิดข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลไปบันทึกได้ โปรดแจ้งครู', 'error');
+            });
         }
         
     </script>
